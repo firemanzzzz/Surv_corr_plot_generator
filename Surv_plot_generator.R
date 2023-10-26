@@ -1,3 +1,12 @@
+#install the packages
+install.packages("survminer")
+install.packages("survival")
+install.packages("broom")
+install.packages("readr")
+install.packages("ggplot2")
+install.packages("survcomp")
+
+#load packages
 library(survminer)
 library(survival)
 library(broom)
