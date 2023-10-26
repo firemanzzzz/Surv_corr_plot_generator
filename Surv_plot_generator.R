@@ -4,7 +4,9 @@ install.packages("survival")
 install.packages("broom")
 install.packages("readr")
 install.packages("ggplot2")
-install.packages("survcomp")
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("survcomp")
 
 #load packages
 library(survminer)
