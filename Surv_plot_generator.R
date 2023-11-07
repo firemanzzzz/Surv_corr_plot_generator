@@ -59,10 +59,10 @@ BRCA_expression_z_score$NLRC5
 
 
 #Generate costume function: survival curve by higi-high
-survival_plotter_screen <- function(x,y,z){
+survival_plotter_screen <- function(x,y,w,z){
   #Nlrc5 and another gene are grouped by expression level, separately
-  y$x.n.group[y$NLRC5 > x] <- 1
-  y$x.n.group[y$NLRC5 < -x] <- 2
+  y$x.n.group[y[,w] > x] <- 1
+  y$x.n.group[y[,w] < -x] <- 2
   y$s.unknown.group[y[,z] > x] <- 0
   y$s.unknown.group[y[,z] < -x] <- 4
   #Nlrc5 and another gene are grouped by expression level, together
@@ -91,15 +91,16 @@ survival_plotter_screen <- function(x,y,z){
   #display p-val and HR in plot
   plot$plot <- plot$plot +
     ggplot2::annotate("text", x = 2000, y = 0.2, label = pval$pval.txt, size = 5) +
-    ggplot2::annotate("text", x = 2000, y = 0.1, label = HR$hazard.ratio, size = 5) +
+    ggplot2::annotate("text", x = 2000, y = 0.1, label = HR$hazard.ratio, size = 5)+
+    ggplot2::annotate("text", x = 2000, y = 0.4, label = colnames(y)[w], size = 5) +
     ggplot2::annotate("text", x = 2000, y = 0.3, label = colnames(y)[z], size = 5)
   return(plot)
 }
 
 #Generate costume function: survival curve by low-low
-survival_plotter_screen_2 <- function(x,y,z){
-  y$x.n.group[y$NLRC5 > x] <- 1
-  y$x.n.group[y$NLRC5 < -x] <- 2
+survival_plotter_screen_2 <- function(x,y,w,z){
+  y$x.n.group[y[,w] > x] <- 1
+  y$x.n.group[y[,w] < -x] <- 2
   y$s.unknown.group[y[,z] > x] <- 0
   y$s.unknown.group[y[,z] < -x] <- 4
   y$x.group[y$x.n.group + y$s.unknown.group == 1] <- NA
@@ -118,12 +119,15 @@ survival_plotter_screen_2 <- function(x,y,z){
                      surv.event = y$OS, na.rm = T)
   plot$plot <- plot$plot +
     ggplot2::annotate("text", x = 2000, y = 0.2, label = pval$pval.txt, size = 5) +
-    ggplot2::annotate("text", x = 2000, y = 0.1, label = HR$hazard.ratio, size = 5) +
+    ggplot2::annotate("text", x = 2000, y = 0.1, label = HR$hazard.ratio, size = 5)+
+    ggplot2::annotate("text", x = 2000, y = 0.4, label = colnames(y)[w], size = 5)  +
     ggplot2::annotate("text", x = 2000, y = 0.3, label = colnames(y)[z], size = 5)
   return(plot)
 }
 
-survival_plotter_screen_2(0,BRCA_expression_z_score,11)
+#Test run to examine whether the funciton runs OK
+survival_plotter_screen_2(0,BRCA_expression_z_score,11,123)
+survival_plotter_screen(0,BRCA_expression_z_score,11,123)
 
 #Make a list object to store all the plot
 my_surv_plots.BRCA.NLRC5 <- vector('list', 20531)
@@ -140,7 +144,7 @@ for (z  in 10154:20531) {
     message(z)
     z <- z
     my_surv_plots.BRCA.NLRC5[[z]] <- local({
-      p1 <- survival_plotter_screen_2(0,BRCA_expression_z_score,z)
+      p1 <- survival_plotter_screen_2(0,BRCA_expression_z_score,9658,z)
     })
     svg(BRCA.surv.p.filenames[z])
     plot(my_surv_plots.BRCA.NLRC5[[z]]$plot, col = z)
